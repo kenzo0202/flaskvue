@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Home Page</p>
+    <p>ランダム数字カウンター</p>
     <p>Random Number from backend: {{ randomNumber }}</p>
     <button @click="getRandom">New Random Number</button>
   </div>
