@@ -13,8 +13,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $FRONTEND_IMAGE_URI:latest ./frontend
-      - docker build -t $BACKEND_IMAGE_URI:latest ./backend
+      - docker build -t $FRONTEND_IMAGE_URI:latest -f ./frontend/Dockerfile .
+      - docker build -t $BACKEND_IMAGE_URI:latest -f ./backend/Dockerfile .
       - docker tag $FRONTEND_IMAGE_URI:latest $FRONTEND_IMAGE_URI:$IMAGE_TAG
       - docker tag $BACKEND_IMAGE_URI:latest $BACKEND_IMAGE_URI:$IMAGE_TAG
   post_build:
