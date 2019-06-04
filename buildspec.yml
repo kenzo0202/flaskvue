@@ -6,21 +6,27 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - $(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})
-      - REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_NAME}
+      - FRONTEND_IMAGE_URI=291037578550.dkr.ecr.eu-west-2.amazonaws.com/demoapp-frontend
+      - BACKEND_IMAGE_URI=291037578550.dkr.ecr.eu-west-2.amazonaws.com/demoapp-backend
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker build -t $FRONTEND_IMAGE_URI:latest ./frontend
+      - docker build -t $BACKEND_IMAGE_URI:latest ./backend
+      - docker tag $FRONTEND_IMAGE_URI:latest $FRONTEND_IMAGE_URI:$IMAGE_TAG
+      - docker tag $BACKEND_IMAGE_URI:latest $BACKEND_IMAGE_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $FRONTEND_IMAGE_URI:latest
+      - docker push $BACKEND_IMAGE_URI:latest
+      - docker push $FRONTEND_IMAGE_URI:$IMAGE_TAG
+      - docker push $BACKEND_IMAGE_URI:$IMAGE_TAG
       - echo Writing image definitions file...
-      - echo "[{\"name\":\"${IMAGE_NAME}\",\"imageUri\":\"${REPOSITORY_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
+      - echo "[{\"name\":\"demoapp-frontend",\"imageUri\":\"${FRONTEND_IMAGE_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
+      - echo "[{\"name\":\"demoapp-backend",\"imageUri\":\"${BACKEND_IMAGE_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
